@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,7 +19,7 @@ import java.util.List;
 public class TurnoverSheets {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "t_id")
     private int id;
     @Column
@@ -29,8 +30,10 @@ public class TurnoverSheets {
     private String bank_name;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "turnover_id")
-    private List<SheetLine> turnover_sheet_element;
+    @JoinColumn(name = "turnover_sheet_id", nullable = false)
+    private List<SheetLine> turnover_sheet_element = new ArrayList<>();
+
+    public void add(SheetLine sheetLine) { turnover_sheet_element.add(sheetLine); }
 
 }
 

@@ -17,6 +17,9 @@ public class TurnoverSheetsServiceImpl implements TurnoverSheetsService{
     public void create(TurnoverSheets turnoverSheets) { turnoverSheetsRepository.save(turnoverSheets); }
 
     @Override
+    public void saveAll(List<TurnoverSheets> list) { turnoverSheetsRepository.saveAll(list); }
+
+    @Override
     public List<TurnoverSheets> readAll() { return turnoverSheetsRepository.findAll(); }
 
     @Override

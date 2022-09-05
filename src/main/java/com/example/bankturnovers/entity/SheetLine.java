@@ -21,5 +21,17 @@ public class SheetLine {
     @Column(name="sid")
     private int id;
     @Column
-    private int accounting;
+    private String accounting;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "income_saldo_id")
+    private IncomeSaldo incomeSaldo;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "turnovers_id")
+    private Turnovers turnovers;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "outcome_saldo_id")
+    private OutcomeSaldo outcomeSaldo;
+    @Column
+    private String class_name;
+
 }

@@ -7,6 +7,7 @@ import java.util.List;
 public interface TurnoverSheetsService {
 
     void create(TurnoverSheets turnoverSheets);
+    void saveAll(List<TurnoverSheets> list);
     List<TurnoverSheets> readAll();
     TurnoverSheets read(int id);
     boolean update(TurnoverSheets turnoverSheets, int id);
