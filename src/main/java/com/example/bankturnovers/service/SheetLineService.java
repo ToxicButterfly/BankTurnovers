@@ -11,4 +11,10 @@ public interface SheetLineService {
     SheetLine read(int id);
     boolean update(SheetLine sheetLine, int id);
     boolean delete(int id);
+    List<String> getCounts(String i);
+    int getClassCount();
+
+    List<SheetLine> getClass(String num);
+
+    List<SheetLine> getAccounts(String num);
 }

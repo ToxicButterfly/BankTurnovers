@@ -29,7 +29,6 @@ public class Parsing {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
         //creating workbook instance that refers to .xls file
         HSSFWorkbook wb = null;
         try {

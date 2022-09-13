@@ -1,8 +1,6 @@
 package com.example.bankturnovers.service;
 
-import com.example.bankturnovers.entity.IncomeSaldo;
 import com.example.bankturnovers.entity.SheetLine;
-import com.example.bankturnovers.repository.IncomeSaldoRepository;
 import com.example.bankturnovers.repository.SheetLineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,4 +40,16 @@ public class SheetLineServiceImpl implements SheetLineService{
         }
         else return false;
     }
+
+    @Override
+    public List<String> getCounts(String i) { return sheetLineRepository.findAccountByClass(i); }
+
+    @Override
+    public int getClassCount() { return sheetLineRepository.findUniqueClasses(); }
+
+    @Override
+    public List<SheetLine> getClass(String num) { return sheetLineRepository.findSheetLineByClassNameContains(num); }
+
+    @Override
+    public List<SheetLine> getAccounts(String num) { return sheetLineRepository.findSheetLinesByAccountingStartsWith(num); }
 }

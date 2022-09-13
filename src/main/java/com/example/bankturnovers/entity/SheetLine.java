@@ -32,6 +32,6 @@ public class SheetLine {
     @JoinColumn(name = "outcome_saldo_id")
     private OutcomeSaldo outcomeSaldo;
     @Column
-    private String class_name;
+    private String className;
 
 }

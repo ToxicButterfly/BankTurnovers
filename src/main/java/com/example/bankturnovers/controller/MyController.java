@@ -1,7 +1,9 @@
 package com.example.bankturnovers.controller;
 
 import com.example.bankturnovers.entity.*;
-import com.example.bankturnovers.service.*;
+import com.example.bankturnovers.service.Parsing;
+import com.example.bankturnovers.service.SheetLineService;
+import com.example.bankturnovers.service.TurnoverSheetsService;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -11,39 +13,35 @@ import org.apache.poi.ss.usermodel.Row;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
+@Controller
 public class MyController {
 
     private final TurnoverSheetsService turnoverSheetsService;
-//    private final IncomeSaldoService incomeSaldoService;
-//    private final TurnoversService turnoversService;
-//    private final OutcomeSaldoService outcomeSaldoService;
     private final SheetLineService sheetLineService;
 
     @Autowired
     MyController(TurnoverSheetsService turnoverSheetsService, SheetLineService sheetLineService) {
         this.turnoverSheetsService = turnoverSheetsService;
-//        this.incomeSaldoService = incomeSaldoService;
-//        this.turnoversService = turnoversService;
-//        this.outcomeSaldoService = outcomeSaldoService;
         this.sheetLineService = sheetLineService;
     }
 
-    @PostMapping(value = "/placeOrder")
-    public ResponseEntity<?> placeTurnoverSheet() {
-        TurnoverSheets turnoverSheets = new TurnoverSheets();
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
     @GetMapping(value = "/parse")
-    public ResponseEntity<List<TurnoverSheets>> findAllSheets() {
+    public ResponseEntity<?> findAllSheets(HttpServletRequest request, HttpServletResponse response) {
+        String file_name = "ОСВ для тренинга.xls";
         HSSFWorkbook wb = Parsing.getFile();
 
         //creating a Sheet object to retrieve the object
@@ -91,14 +89,15 @@ public class MyController {
                 list.clear();
                 continue;
             }
-            sheetLine.setClass_name(class_name);
+            sheetLine.setClassName(class_name);
             sheetLine.setAccounting(list.get(0)+"");
-            incomeSaldo.setActive(Double.parseDouble(list.get(1)+""));
-            incomeSaldo.setPassive(Double.parseDouble(list.get(2)+""));
-            turnovers.setDebit(Double.parseDouble(list.get(3)+""));
-            turnovers.setCredit(Double.parseDouble(list.get(4)+""));
-            outcomeSaldo.setActive(Double.parseDouble(list.get(5)+""));
-            outcomeSaldo.setPassive(Double.parseDouble(list.get(6)+""));
+            incomeSaldo.setActive(BigDecimal.valueOf(Double.valueOf(list.get(1)+"")));
+            incomeSaldo.setPassive(BigDecimal.valueOf(Double.valueOf(list.get(2)+"")));
+            turnovers.setDebit(BigDecimal.valueOf(Double.valueOf(list.get(3)+"")));
+            turnovers.setCredit(BigDecimal.valueOf(Double.valueOf(list.get(4)+"")));
+            outcomeSaldo.setActive(BigDecimal.valueOf(Double.valueOf(list.get(5)+"")));
+            outcomeSaldo.setPassive(BigDecimal.valueOf(Double.valueOf(list.get(6)+"")));
+
             sheetLine.setIncomeSaldo(incomeSaldo);
             sheetLine.setTurnovers(turnovers);
             sheetLine.setOutcomeSaldo(outcomeSaldo);
@@ -106,6 +105,45 @@ public class MyController {
             list.clear();
         }
         turnoverSheetsService.create(turnoverSheets);
+
+        response.setContentType("text/plain");  // Set content type of the response so that jQuery knows what it can expect.
+        response.setCharacterEncoding("UTF-8"); // You want world domination, huh?
+        try {
+            response.getWriter().write("File " + file_name + " has been parsed!");       // Write response body.
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @RequestMapping("/BankTurnovers")
+    public String index(ModelMap model) {
+        model.addAttribute("classes", sheetLineService.getClassCount());
+        return "index";
+    }
+
+    @GetMapping(value = "/BankTurnovers/class/{id}")
+    public String getClass(@PathVariable(name = "id") String id, Model model) {
+        List<SheetLine> list = sheetLineService.getClass(" " + id + " ");
+        List<String> accounts = sheetLineService.getCounts(id);
+        model.addAttribute("sheets", list);
+        model.addAttribute("accounts", accounts);
+        return "list";
+    }
+
+    @GetMapping(value = "/BankTurnovers/classes")
+    public String getAllSheets(Model model) {
+        List<SheetLine> sheetList = sheetLineService.readAll();
+
+        model.addAttribute("sheets", sheetList);
+        return "list";
+    }
+
+    @GetMapping(value = "/BankTurnovers/class/{id}/{id2}")
+    public String getAccounts(@PathVariable(name = "id2") String id, Model model) {
+        List<SheetLine> sheetList = sheetLineService.getAccounts(id);
+        model.addAttribute("sheets", sheetList);
+        return "list";
+    }
+
 }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
@@ -19,8 +20,10 @@ public class IncomeSaldo {
     @GeneratedValue
     @Column(name = "i_id")
     private int id;
-    private Double active;
-    private Double passive;
+    @Column(precision = 25, scale = 8)
+    private BigDecimal active;
+    @Column(precision = 25, scale = 8)
+    private BigDecimal passive;
     @OneToOne(mappedBy = "incomeSaldo", cascade = CascadeType.ALL)
     private SheetLine sheetLine;
 }
