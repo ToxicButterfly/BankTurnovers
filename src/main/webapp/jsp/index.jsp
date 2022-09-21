@@ -22,10 +22,10 @@
     function getClass() {
         var select = document.getElementById('class');
         if(select.value != "Choose a class") {
-            window.location.href = select.value;
+            window.location.href += select.value;
         }
     }
-    function getAll() { window.location.href = 'classes' }
+    function getAll() { window.location.href += '/classes' }
 
 </script>
 
@@ -38,7 +38,7 @@
         <%
             int num = (int) request.getAttribute("classes");
             for(int i=1;i<num+1;i++) {
-                out.println("<option value=\"class/" + i +"\">" + i + "</option>");
+                out.println("<option value=\"/class/" + i +"\">" + i + "</option>");
             }
         %>
     </select>

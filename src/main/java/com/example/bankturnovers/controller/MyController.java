@@ -53,7 +53,6 @@ public class MyController {
         //getting bank name
         String bank_name = sheet.getRow(3).getCell(0).getStringCellValue();
         //getting period time for turnover statements
-
         String period = sheet.getRow(2).getCell(0).getStringCellValue();
         String start_date, end_date;
         start_date = period.substring(12,22);
@@ -63,6 +62,8 @@ public class MyController {
         turnoverSheets.setStart_date(start_date);
         turnoverSheets.setEnd_date(end_date);
         String class_name = null;
+
+        //getting info from the table
         for (int i = 8; i < sheet.getPhysicalNumberOfRows()-1; i++) {
             SheetLine sheetLine = new SheetLine();
             IncomeSaldo incomeSaldo = new IncomeSaldo();
@@ -134,7 +135,6 @@ public class MyController {
     @GetMapping(value = "/BankTurnovers/classes")
     public String getAllSheets(Model model) {
         List<SheetLine> sheetList = sheetLineService.readAll();
-
         model.addAttribute("sheets", sheetList);
         return "list";
     }
